@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS templates;
+DROP EXTENSION IF EXISTS "pgcrypto";
