@@ -8,9 +8,11 @@ import (
 )
 
 type Config struct {
-	Env  string     `yaml:"env" env:"ENV" env-default:"local"`
-	HTTP HTTPConfig `yaml:"http"`
-	PG   PGConfig   `yaml:"postgres"`
+	Env   string      `yaml:"env" env:"ENV" env-default:"local"`
+	HTTP  HTTPConfig  `yaml:"http"`
+	PG    PGConfig    `yaml:"postgres"`
+	Redis RedisConfig `yaml:"redis"`
+	Kafka KafkaConfig `yaml:"kafka"`
 }
 
 type HTTPConfig struct {
@@ -25,6 +27,17 @@ type PGConfig struct {
 	DBName   string `yaml:"dbname" env:"POSTGRES_DB" env-default:"event-dispatcher_db"`
 }
 
+type RedisConfig struct {
+	Host     string `yaml:"host" env:"REDIS_HOST" env-default:"localhost"`
+	Port     string `yaml:"port" env:"REDIS_PORT" env-default:"6379"`
+	Password string `yaml:"password" env:"REDIS_PASSWORD"`
+}
+
+type KafkaConfig struct {
+	Brokers []string `yaml:"brokers" env:"KAFKA_BROKERS" env-default:"localhost:9092"`
+	Topic   string   `yaml:"topic" env:"KAFKA_TOPIC" env-default:"notification_events"`
+}
+
 var (
 	instance *Config
 	once     sync.Once
@@ -37,7 +50,7 @@ func GetConfig() *Config {
 		_ = cleanenv.ReadConfig("config/config.yaml", instance)
 
 		if err := cleanenv.ReadEnv(instance); err != nil {
-			log.Fatalf("failed to read config: %v", err)
+			log.Fatalf("Failed to read config: %v", err)
 		}
 	})
 	return instance
