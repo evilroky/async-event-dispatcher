@@ -42,7 +42,7 @@ func (r *NotificationRepo) Create(ctx context.Context, n *notification.Notificat
 
 func (r *NotificationRepo) GetByID(ctx context.Context, id string) (*notification.Notification, error) {
 	query := `
-		SELECT id, user_id, template_code, payload, status, created_at, updated_at\
+		SELECT id, user_id, template_code, payload, status, error_reason, created_at, updated_at
 		FROM notifications
 		WHERE id = $1`
 

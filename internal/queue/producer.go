@@ -3,6 +3,7 @@ package queue
 import (
 	"async-event-dispatcher/internal/config"
 	"async-event-dispatcher/internal/domain/notification"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -57,7 +58,7 @@ func (p *Producer) PublishNotification(event *notification.Notification) error {
 		slog.String("topic", p.topic),
 		slog.Int("partition", int(partition)),
 		slog.Int64("offset", offset),
-		slog.Int("notifications_id", event.ID),
+		slog.String("notifications_id", event.ID),
 	)
 
 	return nil
@@ -65,4 +66,35 @@ func (p *Producer) PublishNotification(event *notification.Notification) error {
 
 func (p *Producer) Close() error {
 	return p.producer.Close()
+}
+
+func (p *Producer) SendToDLQ(ctx context.Context, dlqTopic string, notification *notification.Notification, reason string) error {
+	payload, err := json.Marshal(notification)
+	if err != nil {
+		return fmt.Errorf("Failed to marshal notification event for DLQ: %s", err)
+	}
+
+	msg := &sarama.ProducerMessage{
+		Topic: dlqTopic,
+		Key:   sarama.StringEncoder(notification.ID),
+		Value: sarama.ByteEncoder(payload),
+		Headers: []sarama.RecordHeader{
+			{
+				Key:   []byte("error_reason"),
+				Value: []byte(reason),
+			},
+		},
+	}
+
+	_, _, err = p.producer.SendMessage(msg)
+	if err != nil {
+		return fmt.Errorf("Failed to send message to DLQ: %s", err)
+	}
+
+	slog.Warn("Message sent to DLQ",
+		slog.String("notifications_id", notification.ID),
+		slog.String("dlq_topic", dlqTopic),
+		slog.String("reason", reason),
+	)
+	return nil
 }

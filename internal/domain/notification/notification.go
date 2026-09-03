@@ -21,7 +21,7 @@ const (
 )
 
 type Notification struct {
-	ID           int             `json:"id"`
+	ID           string          `json:"id"`
 	UserID       string          `json:"user_id"`
 	TemplateCode string          `json:"template_code"`
 	Payload      json.RawMessage `json:"payload"`

@@ -20,22 +20,23 @@ type HTTPConfig struct {
 }
 
 type PGConfig struct {
-	Host     string `yaml:"host" env:"POSTGRES_HOST" env-default:"localhost"`
+	Host     string `yaml:"host" env:"POSTGRES_HOST" env-default:"event-dispatcher-postgres"`
 	Port     string `yaml:"port" env:"POSTGRES_PORT" env-default:"5432"`
-	User     string `yaml:"user" env:"POSTGRES_USER" env-default:"<YOUR-USERS>"`
-	Password string `yaml:"password" env:"POSTGRES_PASSWORD" env-default:"<YOUR-PASSWORD>"`
+	User     string `yaml:"user" env:"POSTGRES_USER" env-default:"root"`
+	Password string `yaml:"password" env:"POSTGRES_PASSWORD" env-default:"qwerty"`
 	DBName   string `yaml:"dbname" env:"POSTGRES_DB" env-default:"event-dispatcher_db"`
 }
 
 type RedisConfig struct {
-	Host     string `yaml:"host" env:"REDIS_HOST" env-default:"localhost"`
+	Host     string `yaml:"host" env:"REDIS_HOST" env-default:"event-dispatcher-redis"`
 	Port     string `yaml:"port" env:"REDIS_PORT" env-default:"6379"`
 	Password string `yaml:"password" env:"REDIS_PASSWORD"`
 }
 
 type KafkaConfig struct {
-	Brokers []string `yaml:"brokers" env:"KAFKA_BROKERS" env-default:"localhost:9092"`
-	Topic   string   `yaml:"topic" env:"KAFKA_TOPIC" env-default:"notification_events"`
+	Brokers  []string `yaml:"KAFKA-BROKERS" env:"KAFKA_BROKERS" env-default:"event-dispatcher-kafka:9092"`
+	Topic    string   `yaml:"KAFKA_TOPIC" env:"KAFKA_TOPIC" env-default:"notification_events"`
+	DLQTopic string   `env:"KAFKA_DLQ_TOPIC" env-default:"notifications-dlq"`
 }
 
 var (

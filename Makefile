@@ -33,3 +33,8 @@ migrate-force:
 #Запуск тестов
 test:
 	go test -v ./...
+kafka-check:
+	docker exec -it event-dispatcher-kafka /opt/kafka/bin/kafka-console-consumer.sh \
+  	--bootstrap-server localhost:9092 \
+  	--topic notifications_dlq \
+  	--from-beginning
